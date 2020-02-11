@@ -20,7 +20,7 @@ class RevolutTest extends TestCase
     {
         $this->provider = new \League\OAuth2\Client\Provider\Revolut([
             'clientId' => 'mock.example',
-            'privateKey' => 'file://' . __DIR__ . '/private.pem',
+            'privateKey' => 'file://' . __DIR__ . '/test_key.pem',
             'redirectUri' => 'none'
         ]);
     }
@@ -96,7 +96,7 @@ class RevolutTest extends TestCase
     {
         $provider = new Revolut([
             'clientId' => 'mock.example',
-            'privateKey' => 'file://' . __DIR__ . '/private.pem',
+            'privateKey' => 'file://' . __DIR__ . '/test_key.pem',
             'redirectUri' => 'none'
         ]);
         $provider = m::mock($provider);
