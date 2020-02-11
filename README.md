@@ -17,13 +17,22 @@ composer require vdbelt/oauth2-revolut
 
 Usage is the same as The League's OAuth client, using `\League\OAuth2\Client\Provider\Revolut` as the provider.
 
+### Generating Key Pairs
+Start with generating a key pair as described in the [Revolut API docs](https://revolutdev.github.io/business-api/?shell--sandbox#revolut-api-authentication-setting-up-access-to-your-business-account):
+```
+openssl genrsa -out privatekey.pem 1024
+openssl req -new -x509 -key privatekey.pem -out publickey.cer -days 1825
+```
+
+Upload the public key through the Revolut for Business API Settings page, and store the private key somewhere safe.
+
 ### Authorization Code Flow
 
 ```php
 $provider = new League\OAuth2\Client\Provider\Revolut([
     'clientId'          => '{revolut-client-id}',
     'privateKey'        => 'file://{revolut-private-key-path}',
-    'redirectUri'       => 'https://example.com/callback-url'
+    'redirectUri'       => 'https://example.com/callback-url' // equal to redirect URI provided to Revolut
 ]);
 
 if (!isset($_GET['code'])) {
@@ -46,6 +55,14 @@ if (!isset($_GET['code'])) {
     $token = $provider->getAccessToken('authorization_code', [
         'code' => $_GET['code']
     ]);
+
+    // Store the token somewhere safe. Note that the token is valid for 40 minutes.
+    // After 40 minutes, you can request a new access token based on the refresh token (valid for 90 days):
+    if($token->hasExpired()) {
+        $newToken = $provider->getAccessToken('refresh_token', [
+            'refresh_token' => $token->getRefreshToken()
+        ]);
+    }
 
     // Use this to interact with the API on the users behalf
     echo $token->getToken();
