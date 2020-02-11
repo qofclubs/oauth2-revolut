@@ -1,4 +1,5 @@
 # Revolut Provider for OAuth 2.0 Client
+[![Build Status](https://travis-ci.org/vdbelt/oauth2-revolut.svg?branch=master)](https://travis-ci.org/vdbelt/oauth2-revolut)
 [![Latest Version](https://img.shields.io/github/release/vdbelt/oauth2-revolut.svg?style=flat-square)](https://github.com/vdbelt/oauth2-revolut/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 [![Total Downloads](https://img.shields.io/packagist/dt/vdbelt/oauth2-revolut.svg?style=flat-square)](https://packagist.org/packages/vdbelt/oauth2-revolut)
