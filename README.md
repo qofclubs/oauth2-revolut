@@ -33,6 +33,7 @@ $provider = new League\OAuth2\Client\Provider\Revolut([
     'clientId'          => '{revolut-client-id}',
     'privateKey'        => 'file://{revolut-private-key-path}',
     'redirectUri'       => 'https://example.com/callback-url' // equal to redirect URI provided to Revolut
+    'isSandbox'         => false
 ]);
 
 if (!isset($_GET['code'])) {
