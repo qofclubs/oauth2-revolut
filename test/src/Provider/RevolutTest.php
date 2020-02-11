@@ -41,6 +41,22 @@ class RevolutTest extends TestCase
         ]);
     }
 
+    public function testSandbox()
+    {
+        $provider = new Revolut([
+            'clientId' => 'mock_client_id',
+            'privateKey' => 'mock_key',
+            'redirectUri' => 'none',
+            'isSandbox' => true,
+        ]);
+
+        $authUrl = $provider->getAuthorizationUrl();
+        $tokenUrl = $provider->getBaseAccessTokenUrl([]);
+
+        $this->assertStringContainsString('https://sandbox-business.revolut.com', $authUrl);
+        $this->assertStringContainsString('https://sandbox-b2b.revolut.com', $tokenUrl);
+    }
+
     public function testAuthorizationUrl()
     {
         $url = $this->provider->getAuthorizationUrl();

@@ -19,6 +19,7 @@ class Revolut extends AbstractProvider
     public $defaultScopes = ['READ'];
     
     protected $privateKey;
+    protected $isSandbox = false;
     
     public function __construct(array $options = [], array $collaborators = [])
     {
@@ -28,7 +29,7 @@ class Revolut extends AbstractProvider
         
         parent::__construct($options, $collaborators);
     }
-
+    
     /**
      * Returns the base URL for authorizing a client.
      *
@@ -38,7 +39,9 @@ class Revolut extends AbstractProvider
      */
     public function getBaseAuthorizationUrl()
     {
-        return 'https://business.revolut.com/app-confirm';
+        return (bool) $this->isSandbox
+            ? 'https://sandbox-business.revolut.com/app-confirm'
+            : 'https://business.revolut.com/app-confirm';
     }
 
     /**
@@ -51,7 +54,9 @@ class Revolut extends AbstractProvider
      */
     public function getBaseAccessTokenUrl(array $params)
     {
-        return 'https://b2b.revolut.com/api/1.0/auth/token';
+        return (bool) $this->isSandbox
+            ? 'https://sandbox-b2b.revolut.com/api/1.0/auth/token'
+            : 'https://b2b.revolut.com/api/1.0/auth/token';
     }
 
     /**
@@ -113,7 +118,13 @@ class Revolut extends AbstractProvider
     {
         throw new Exception('Resource owner details not available for Revolut.');
     }
-    
+
+    /**
+     * @param mixed $grant
+     * @param array $options
+     * @return \League\OAuth2\Client\Token\AccessTokenInterface
+     * @throws IdentityProviderException
+     */
     public function getAccessToken($grant, array $options = [])
     {
         $time = time();
@@ -132,7 +143,10 @@ class Revolut extends AbstractProvider
         
         return parent::getAccessToken($grant, $options);
     }
-    
+
+    /**
+     * @return Key
+     */
     public function getPrivateKey()
     {
         return new Key($this->privateKey);
