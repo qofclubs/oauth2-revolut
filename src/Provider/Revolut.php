@@ -4,6 +4,7 @@ namespace League\OAuth2\Client\Provider;
 
 use Exception;
 use InvalidArgumentException;
+use DateTimeImmutable;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
@@ -127,13 +128,13 @@ class Revolut extends AbstractProvider
      */
     public function getAccessToken($grant, array $options = [])
     {
-        $time = time();
+        $time = new DateTimeImmutable();
         $token = (new Builder())->issuedBy(parse_url($this->redirectUri, PHP_URL_HOST))
             ->permittedFor('https://revolut.com')
             ->issuedAt($time)
-            ->expiresAt($time + 60*60)
+            ->expiresAt($time->modify('+1 hour'))
             ->withHeader('alg', 'RS256')
-            ->withClaim('sub', $this->clientId)
+            ->relatedTo($this->clientId)
             ->getToken(new Sha256(), $this->getPrivateKey());
         
         $options += [
