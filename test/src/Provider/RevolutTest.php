@@ -5,7 +5,6 @@ namespace League\OAuth2\Client\Test\Provider;
 use Exception;
 use GuzzleHttp\Psr7\Response;
 use InvalidArgumentException;
-use Lcobucci\JWT\Builder;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\Revolut;
 use League\OAuth2\Client\Token\AccessToken;
@@ -21,7 +20,7 @@ class RevolutTest extends TestCase
         $this->provider = new \League\OAuth2\Client\Provider\Revolut([
             'clientId' => 'mock.example',
             'privateKey' => 'file://' . __DIR__ . '/test_key.pem',
-            'redirectUri' => 'none'
+            'redirectUri' => 'https://example.com/callback-url'
         ]);
     }
 
@@ -37,7 +36,7 @@ class RevolutTest extends TestCase
         
         new \League\OAuth2\Client\Provider\Revolut([
             'clientId' => 'mock.example',
-            'redirectUri' => 'none'
+            'redirectUri' => 'https://example.com/callback-url'
         ]);
     }
 
@@ -46,7 +45,7 @@ class RevolutTest extends TestCase
         $provider = new Revolut([
             'clientId' => 'mock_client_id',
             'privateKey' => 'mock_key',
-            'redirectUri' => 'none',
+            'redirectUri' => 'https://example.com/callback-url',
             'isSandbox' => true,
         ]);
 
@@ -97,7 +96,7 @@ class RevolutTest extends TestCase
         $provider = new Revolut([
             'clientId' => 'mock.example',
             'privateKey' => 'file://' . __DIR__ . '/test_key.pem',
-            'redirectUri' => 'none'
+            'redirectUri' => 'https://example.com/callback-url'
         ]);
         $provider = m::mock($provider);
 
