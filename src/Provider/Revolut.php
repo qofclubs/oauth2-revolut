@@ -5,11 +5,13 @@ namespace League\OAuth2\Client\Provider;
 use Exception;
 use InvalidArgumentException;
 use DateTimeImmutable;
-use Lcobucci\JWT\Builder;
+use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Key;
+use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
+use League\OAuth2\Client\Token\AccessTokenInterface;
 use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
 use Psr\Http\Message\ResponseInterface;
 
@@ -65,7 +67,7 @@ class Revolut extends AbstractProvider
      *
      * @param AccessToken $token
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
@@ -113,7 +115,7 @@ class Revolut extends AbstractProvider
      * @param array $response
      * @param AccessToken $token
      * @return ResourceOwnerInterface
-     * @throws \Exception
+     * @throws Exception
      */
     protected function createResourceOwner(array $response, AccessToken $token)
     {
@@ -123,23 +125,26 @@ class Revolut extends AbstractProvider
     /**
      * @param mixed $grant
      * @param array $options
-     * @return \League\OAuth2\Client\Token\AccessTokenInterface
+     * @return AccessTokenInterface
      * @throws IdentityProviderException
      */
     public function getAccessToken($grant, array $options = [])
     {
         $time = new DateTimeImmutable();
-        $token = (new Builder())->issuedBy(parse_url($this->redirectUri, PHP_URL_HOST))
+        $config = Configuration::forSymmetricSigner(new Sha256(), $this->getPrivateKey());
+
+        $token = $config->builder()
+            ->issuedBy(parse_url($this->redirectUri, PHP_URL_HOST))
             ->permittedFor('https://revolut.com')
             ->issuedAt($time)
             ->expiresAt($time->modify('+1 hour'))
             ->withHeader('alg', 'RS256')
             ->relatedTo($this->clientId)
-            ->getToken(new Sha256(), $this->getPrivateKey());
+            ->getToken($config->signer(), $config->signingKey());
         
         $options += [
             'client_assertion_type' => 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
-            'client_assertion' => (string) $token
+            'client_assertion' => $token->toString()
         ];
         
         return parent::getAccessToken($grant, $options);
@@ -150,6 +155,6 @@ class Revolut extends AbstractProvider
      */
     public function getPrivateKey()
     {
-        return new Key($this->privateKey);
+        return InMemory::file($this->privateKey);
     }
 }
